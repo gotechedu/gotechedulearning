@@ -8,10 +8,22 @@ export const metadata: Metadata = {
   description: "Industry-focused courses, hands-on projects, expert mentorship, and certifications designed to help you build real-world skills.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+import { AuthProvider } from "./context/AuthContext";
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en">
-      <body><Header/><main>{children}</main><Footer/></body>
+      <body>
+        <AuthProvider>
+          <Header />
+          <main>{children}</main>
+          <Footer />
+        </AuthProvider>
+      </body>
     </html>
   );
 }
