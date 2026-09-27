@@ -1,69 +1,21 @@
-import Image from "next/image";
+import Link from "next/link";
+import { courses } from "./data";
+
+const categories = ["Artificial Intelligence", "Full Stack Development", "Data Science", "Cloud & DevOps", "Cybersecurity"];
 
 export default function Home() {
-  return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
+  return <>
+    <section className="hero wrap">
+      <div className="hero-copy"><span className="eyebrow"><i /> NEW COHORTS · ENROLLMENT OPEN</span><h1>Build skills.<br/><em>Build your future.</em></h1><p className="lead">Career-focused learning with expert mentors, practical projects, and a clear path from curious to career-ready.</p><div className="hero-actions"><Link className="button button-primary" href="/courses">Explore programs <span>↗</span></Link><Link className="button button-quiet" href="/learning-paths">Find your learning path <span>→</span></Link></div><div className="social-proof"><div className="avatars"><b>AK</b><b>SR</b><b>PM</b><b>+</b></div><span><strong>12,000+</strong> learners building what’s next</span></div></div>
+      <div className="hero-art"><div className="art-glow"/><div className="orbit orbit-one"/><div className="orbit orbit-two"/><div className="hero-badge badge-top"><span className="badge-icon purple">✦</span><span><b>Learn by doing</b><small>Real-world projects</small></span></div><div className="learning-card"><div className="card-top"><span className="live-dot">● LIVE LEARNING</span><span className="more">···</span></div><div className="art-code"><div className="code-window"><div className="window-dots"><i/><i/><i/></div><div className="code-lines"><span className="code-purple">const</span> <span className="code-blue">future</span> = <span className="code-yellow">build</span>();<br/><span className="code-muted">// your next chapter</span><br/><span className="code-pink">&lt;Career</span> <span className="code-blue">ready</span> <span className="code-pink">/&gt;</span></div><div className="code-orb">✳</div></div></div><div className="course-progress"><div className="progress-icon">⌘</div><div className="progress-copy"><b>Full Stack Development</b><small>Module 04 · Building for the web</small><div className="progress-track"><i/></div></div><strong>68%</strong></div></div><div className="hero-badge badge-bottom"><span className="badge-icon gold">✧</span><span><b>Industry recognized</b><small>Certificates that count</small></span></div><div className="art-spark spark-a">✳</div><div className="art-spark spark-b">✦</div></div>
+    </section>
+    <section className="trust-strip"><div className="wrap trust-inner"><span>LEARN THE SKILLS TEAMS ARE LOOKING FOR</span><div className="trust-logos"><b>◈ Google</b><b>◉ AWS</b><b>▰ Microsoft</b><b>◉ meta</b><b>✳ NVIDIA</b></div></div></section>
+    <section className="section wrap" id="programs"><div className="section-heading"><div><span className="eyebrow">YOUR NEXT MOVE STARTS HERE</span><h2>Skills for a world<br className="desktop-only"/> that keeps moving.</h2></div><Link className="text-link" href="/courses">Explore all courses <span>↗</span></Link></div><div className="category-row">{categories.map((c,i)=><Link href={`/courses?category=${encodeURIComponent(c)}`} className="category-pill" key={c}><span className={`category-dot dot-${i}`}/>{c}<span className="arrow">↗</span></Link>)}</div>
+      <div className="course-grid">{courses.slice(0,3).map((course,i)=><article className="course-card" key={course.slug}><Link href={`/courses/${course.slug}`} className={`course-cover cover-${i}`}><span className="cover-label">{course.category}</span><span className="cover-symbol">{course.symbol}</span><span className="cover-caption">{course.coverText}</span><span className="cover-arrow">↗</span></Link><div className="course-info"><div className="course-meta"><span>{course.level}</span><span>◷ {course.duration}</span></div><h3><Link href={`/courses/${course.slug}`}>{course.title}</Link></h3><p>{course.description}</p><div className="course-footer"><span className="rating">★ <b>{course.rating}</b> <small>({course.reviews} reviews)</small></span><Link href={`/courses/${course.slug}`} aria-label={`View ${course.title}`}>View program <span>→</span></Link></div></div></article>)}</div>
+    </section>
+    <section className="path-band"><div className="wrap path-layout"><div><span className="eyebrow">A LITTLE MORE DIRECTION</span><h2>Your goals deserve<br/>a <em>real roadmap.</em></h2><p>Follow a guided learning path built around the role you want, with the skills, projects, and milestones to get there.</p><Link className="button button-light" href="/learning-paths">Explore learning paths <span>↗</span></Link></div><div className="roadmap"><div className="roadmap-line"/><div className="road-item done"><span>01</span><div><b>Build your foundation</b><small>Core skills & confidence</small></div><i>✓</i></div><div className="road-item done"><span>02</span><div><b>Learn the tools</b><small>Practice with industry tools</small></div><i>✓</i></div><div className="road-item active"><span>03</span><div><b>Make real projects</b><small>Show what you can do</small></div><i>✦</i></div><div className="road-item"><span>04</span><div><b>Launch your next chapter</b><small>Portfolio, certificate & support</small></div><i>↗</i></div></div></div></section>
+    <section className="section wrap outcomes"><div className="outcome-copy"><span className="eyebrow">LEARNING THAT GOES SOMEWHERE</span><h2>Progress you can<br/>feel. Results you can<br/><em>show.</em></h2><p>Every program is built around practical skills, portfolio-worthy work, and support that continues beyond the final lesson.</p><Link className="text-link" href="/outcomes">See learner outcomes <span>↗</span></Link></div><div className="outcome-stats"><div className="stat stat-main"><span className="stat-mark">↗</span><strong>4.9<span>/5</span></strong><small>average learner satisfaction</small><div className="stars">★★★★★</div></div><div className="stat"><strong>85<span>%</span></strong><small>complete a portfolio project</small></div><div className="stat"><strong>12k<span>+</span></strong><small>learners and counting</small></div><div className="stat stat-note"><span>“</span><p>I finally had the confidence and the work to show what I could do.</p><small>— A GoTechEdu learner</small></div></div></section>
+    <section className="cert-band"><div className="wrap cert-layout"><div className="certificate"><div className="cert-inner"><span className="cert-seal">G</span><small>GOTECHEDU · CERTIFICATE OF COMPLETION</small><h3>Certificate<br/>of Achievement</h3><span className="cert-rule"/><p>This certifies that</p><b>Alex Morgan</b><small>has successfully completed</small><strong>Professional Data Science</strong><div className="cert-sign"><span>✒</span><i>Program Director</i></div></div></div><div className="cert-copy"><span className="eyebrow">RECOGNIZE YOUR GROWTH</span><h2>Make your progress<br/><em>official.</em></h2><p>Earn a shareable certificate that celebrates the real skills and work you’ve put in. Add it to your portfolio, resume, and LinkedIn.</p><Link className="button button-primary" href="/certifications">Explore certifications <span>↗</span></Link></div></div></section>
+    <section className="section wrap final-cta"><div><span className="eyebrow">YOUR NEXT CHAPTER IS CLOSER THAN YOU THINK</span><h2>Start learning. Start <em>moving.</em></h2><p>Find a program that fits where you want to go.</p></div><Link className="button button-primary" href="/courses">Find your course <span>↗</span></Link></section>
+  </>;
 }
