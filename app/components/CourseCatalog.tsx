@@ -1,20 +1,18 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import React, { useMemo, useState, useEffect } from "react";
 import { learningApi } from "@/lib/api";
 import { defaultCoursesList, CourseDetail } from "@/lib/courseData";
 import {
   Search,
   X,
-  Star,
   Clock,
   GraduationCap,
   Sparkles,
   ArrowRight,
-  ChevronRight,
   TrendingUp,
-  Layers,
   Filter,
 } from "lucide-react";
 
@@ -22,7 +20,7 @@ export default function CourseCatalog() {
   const [courses, setCourses] = useState<CourseDetail[]>(defaultCoursesList);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
-  const [category, setCategory] = useState("All programs");
+  const [category, setCategory] = useState("All Programs");
   const [selectedLevel, setSelectedLevel] = useState("All Levels");
   const [sortBy, setSortBy] = useState("popular");
 
@@ -33,17 +31,25 @@ export default function CourseCatalog() {
       try {
         setLoading(true);
         const data = await learningApi.getCourses();
-        if (isMounted && data && data.courses && Array.isArray(data.courses) && data.courses.length > 0) {
-          // Map backend course objects to CourseDetail format
+        if (
+          isMounted &&
+          data &&
+          data.courses &&
+          Array.isArray(data.courses) &&
+          data.courses.length > 0
+        ) {
           const mapped: CourseDetail[] = data.courses.map((bc: any) => {
             const fallback = defaultCoursesList.find(
-              (f) => f.slug === bc.slug || f.id === bc._id || f.title.toLowerCase() === (bc.title || "").toLowerCase()
+              (f) =>
+                f.slug === bc.slug ||
+                f.id === bc._id ||
+                f.title.toLowerCase() === (bc.title || "").toLowerCase()
             );
 
             return {
-              id: bc._id || bc.slug,
+              id: bc._id || bc.slug || (fallback ? fallback.id : "course"),
               slug: bc.slug || (fallback ? fallback.slug : "fullstack-nextjs"),
-              title: bc.title,
+              title: bc.title || (fallback ? fallback.title : "Tech Program"),
               category: bc.category || (fallback ? fallback.category : "Full-Stack Development"),
               duration: bc.duration || (fallback ? fallback.duration : "14 Weeks"),
               totalHours: bc.totalHours || (fallback ? fallback.totalHours : "100+ Hours"),
@@ -57,7 +63,8 @@ export default function CourseCatalog() {
               description: bc.description || (fallback ? fallback.description : ""),
               heroTagline: bc.heroTagline || (fallback ? fallback.heroTagline : ""),
               originalPrice: bc.originalPrice || (fallback ? fallback.originalPrice : 45000),
-              discountedPrice: bc.discountedPrice || bc.price || (fallback ? fallback.discountedPrice : 24999),
+              discountedPrice:
+                bc.discountedPrice || bc.price || (fallback ? fallback.discountedPrice : 24999),
               emiStartsAt: bc.emiStartsAt || (fallback ? fallback.emiStartsAt : 2083),
               rating: bc.rating || (fallback ? fallback.rating : 4.88),
               reviewsCount: bc.reviewsCount || (fallback ? fallback.reviewsCount : 1200),
@@ -65,7 +72,12 @@ export default function CourseCatalog() {
               nextBatchDate: bc.nextBatchDate || (fallback ? fallback.nextBatchDate : "Upcoming Cohort 2026"),
               careerOutcome: bc.careerOutcome || (fallback ? fallback.careerOutcome : "Software Engineer"),
               averageSalaryHike: bc.averageSalaryHike || (fallback ? fallback.averageSalaryHike : "75%"),
-              techStack: Array.isArray(bc.techStack) && bc.techStack.length > 0 ? bc.techStack : (fallback ? fallback.techStack : ["React", "TypeScript", "Node.js"]),
+              techStack:
+                Array.isArray(bc.techStack) && bc.techStack.length > 0
+                  ? bc.techStack
+                  : fallback
+                  ? fallback.techStack
+                  : ["React", "TypeScript", "Node.js"],
               prerequisites: bc.prerequisites || (fallback ? fallback.prerequisites : []),
               whatYouWillLearn: bc.whatYouWillLearn || (fallback ? fallback.whatYouWillLearn : []),
               overviewParagraph: bc.overviewParagraph || (fallback ? fallback.overviewParagraph : ""),
@@ -93,13 +105,13 @@ export default function CourseCatalog() {
     };
   }, []);
 
-  // Compute dynamic categories
+  // Compute dynamic categories list
   const categoriesList = useMemo(() => {
     const set = new Set<string>();
     courses.forEach((c) => {
       if (c.category) set.add(c.category);
     });
-    return ["All programs", ...Array.from(set)];
+    return ["All Programs", ...Array.from(set)];
   }, [courses]);
 
   // Filtered and sorted courses
@@ -107,7 +119,7 @@ export default function CourseCatalog() {
     return courses
       .filter((c) => {
         // Category filter
-        if (category !== "All programs" && c.category !== category) {
+        if (category !== "All Programs" && c.category !== category) {
           return false;
         }
         // Level filter
@@ -119,10 +131,8 @@ export default function CourseCatalog() {
           const q = query.toLowerCase();
           const matchTitle = c.title.toLowerCase().includes(q);
           const matchCat = c.category.toLowerCase().includes(q);
-          const matchDesc = c.description.toLowerCase().includes(q);
-          const matchTech = (c.techStack || []).some((t) =>
-            t.toLowerCase().includes(q)
-          );
+          const matchDesc = (c.description || "").toLowerCase().includes(q);
+          const matchTech = (c.techStack || []).some((t) => t.toLowerCase().includes(q));
           if (!matchTitle && !matchCat && !matchDesc && !matchTech) {
             return false;
           }
@@ -137,49 +147,51 @@ export default function CourseCatalog() {
   }, [courses, category, selectedLevel, query, sortBy]);
 
   return (
-    <div>
-      {/* Search & Filter Controls */}
-      <div className="catalog-controls">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-3">
-          <label className="search-box">
-            <Search className="w-4 h-4 text-slate-400 shrink-0" />
+    <div className="space-y-8">
+      {/* Top Search & Filter Bar */}
+      <div className="rounded-2xl border border-slate-200/90 bg-white p-4 sm:p-5 shadow-xs space-y-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+          {/* Search Input */}
+          <div className="relative flex-1">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
+              type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search skills (React, Next.js, Python, Cloud)..."
-              aria-label="Search programs"
+              placeholder="Search programs by skill (Next.js, Python, Cloud, Docker, AI)..."
+              aria-label="Search courses"
+              className="w-full pl-10 pr-9 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition"
             />
-            {query ? (
+            {query && (
               <button
                 type="button"
                 onClick={() => setQuery("")}
-                className="text-slate-400 hover:text-slate-600 p-1"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1"
                 aria-label="Clear search"
               >
-                <X className="w-3.5 h-3.5" />
+                <X className="w-4 h-4" />
               </button>
-            ) : (
-              <kbd>⌘ K</kbd>
             )}
-          </label>
+          </div>
 
-          <div className="flex items-center gap-2">
+          {/* Dropdown Filters */}
+          <div className="flex items-center gap-2.5">
             <select
               value={selectedLevel}
               onChange={(e) => setSelectedLevel(e.target.value)}
-              className="py-2 px-3 rounded-lg border border-slate-200 bg-white text-xs font-semibold text-slate-700 cursor-pointer"
+              className="py-2.5 px-3 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 cursor-pointer focus:outline-none focus:border-blue-500"
             >
-              <option value="All Levels">All Levels</option>
-              <option value="Beginner friendly">Beginner friendly</option>
+              <option value="All Levels">All Experience Levels</option>
+              <option value="Beginner friendly">Beginner Friendly</option>
               <option value="Beginner to Advanced">Beginner to Advanced</option>
               <option value="Intermediate">Intermediate</option>
-              <option value="All levels">All levels</option>
+              <option value="All levels">All Levels Welcome</option>
             </select>
 
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="py-2 px-3 rounded-lg border border-slate-200 bg-white text-xs font-semibold text-slate-700 cursor-pointer"
+              className="py-2.5 px-3 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 cursor-pointer focus:outline-none focus:border-blue-500"
             >
               <option value="popular">Most Popular</option>
               <option value="rating">Highest Rated</option>
@@ -189,80 +201,171 @@ export default function CourseCatalog() {
         </div>
 
         {/* Category Filter Pills */}
-        <div className="filter-row">
-          {categoriesList.map((c) => (
-            <button
-              key={c}
-              className={category === c ? "filter active-filter" : "filter"}
-              onClick={() => setCategory(c)}
-            >
-              {c}
-            </button>
-          ))}
+        <div className="flex gap-2 overflow-x-auto pt-1 no-scrollbar">
+          {categoriesList.map((c) => {
+            const isSelected = category === c;
+            return (
+              <button
+                key={c}
+                type="button"
+                onClick={() => setCategory(c)}
+                className={`whitespace-nowrap px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                  isSelected
+                    ? "bg-blue-600 text-white shadow-2xs"
+                    : "bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900"
+                }`}
+              >
+                {c}
+              </button>
+            );
+          })}
         </div>
       </div>
 
+      {/* Results Count & Active Category Indicator */}
+      <div className="flex items-center justify-between text-xs text-slate-500 px-1">
+        <span>
+          Showing <strong>{filtered.length}</strong> available programs in{" "}
+          <span className="text-blue-600 font-semibold">{category}</span>
+        </span>
+        {(query || category !== "All Programs" || selectedLevel !== "All Levels") && (
+          <button
+            type="button"
+            onClick={() => {
+              setQuery("");
+              setCategory("All Programs");
+              setSelectedLevel("All Levels");
+            }}
+            className="text-blue-600 hover:underline font-bold"
+          >
+            Reset Filters
+          </button>
+        )}
+      </div>
+
       {/* Courses Grid */}
-      <div className="course-grid catalog-grid">
-        {filtered.map((course, i) => (
-          <article className="course-card" key={course.slug || course.id}>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+        {filtered.map((course) => (
+          <article
+            key={course.slug || course.id}
+            className="group flex flex-col rounded-2xl border border-slate-200/90 bg-white overflow-hidden shadow-xs hover:shadow-xl hover:border-blue-300 transition-all duration-300"
+          >
+            {/* Realistic Photographic Cover Banner */}
             <Link
               href={`/courses/${course.slug}`}
-              className={`course-cover cover-${i % 3}`}
+              className="relative h-48 w-full overflow-hidden block"
             >
-              <span className="cover-label">{course.category}</span>
-              <span className="cover-symbol">{course.symbol}</span>
-              <span className="cover-caption">{course.coverText}</span>
-              <span className="cover-arrow">↗</span>
-            </Link>
+              {course.previewImage ? (
+                <Image
+                  src={course.previewImage}
+                  alt={course.title}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+              ) : (
+                <div className={`w-full h-full bg-gradient-to-br ${course.color}`} />
+              )}
 
-            <div className="course-info">
-              <div className="course-meta">
-                <span className="font-semibold text-blue-700">
-                  {course.level}
+              {/* Subtle contrast gradient overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-900/40 to-slate-950/20" />
+
+              {/* Top Badges */}
+              <div className="absolute top-3 left-3 right-3 flex items-center justify-between z-10">
+                <span className="rounded-full bg-slate-900/70 backdrop-blur-md px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white border border-white/20">
+                  {course.category}
                 </span>
-                <span>◷ {course.duration}</span>
+                <span className="rounded-full bg-blue-600/90 backdrop-blur-md px-2.5 py-1 text-[10px] font-bold text-white shadow-2xs">
+                  {course.badge}
+                </span>
               </div>
 
-              <h3>
-                <Link
-                  href={`/courses/${course.slug}`}
-                  className="hover:text-blue-600 transition"
-                >
-                  {course.title}
-                </Link>
-              </h3>
+              {/* Bottom Cover Title / Tagline */}
+              <div className="absolute bottom-3 left-3 right-3 z-10">
+                <p className="text-xs font-semibold text-white/95 line-clamp-1">
+                  {course.coverText}
+                </p>
+              </div>
+            </Link>
 
-              <p className="line-clamp-2">{course.description}</p>
+            {/* Course Body Content */}
+            <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
+              <div className="space-y-2">
+                <div className="flex items-center gap-3 text-xs text-slate-500 font-medium">
+                  <span className="flex items-center gap-1">
+                    <Clock className="w-3.5 h-3.5 text-blue-600" />
+                    {course.duration}
+                  </span>
+                  <span>·</span>
+                  <span className="flex items-center gap-1">
+                    <GraduationCap className="w-3.5 h-3.5 text-indigo-600" />
+                    {course.level}
+                  </span>
+                </div>
+
+                <h3 className="font-heading text-lg font-bold text-slate-900 group-hover:text-blue-600 transition leading-snug line-clamp-2">
+                  <Link href={`/courses/${course.slug}`}>{course.title}</Link>
+                </h3>
+
+                <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
+                  {course.description || course.overviewParagraph}
+                </p>
+              </div>
 
               {/* Tech Stack Pills */}
-              <div className="flex flex-wrap gap-1 my-2">
-                {(course.techStack || []).slice(0, 4).map((tech) => (
-                  <span
-                    key={tech}
-                    className="inline-block rounded bg-slate-100 px-1.5 py-0.5 text-[9px] font-mono text-slate-600"
-                  >
-                    {tech}
+              {course.techStack && course.techStack.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 pt-1">
+                  {course.techStack.slice(0, 4).map((tech) => (
+                    <span
+                      key={tech}
+                      className="rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-700"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                  {course.techStack.length > 4 && (
+                    <span className="rounded-md bg-slate-50 px-1.5 py-0.5 text-[10px] font-semibold text-slate-500">
+                      +{course.techStack.length - 4} more
+                    </span>
+                  )}
+                </div>
+              )}
+
+              {/* Rating & Pricing Row */}
+              <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-amber-500 font-bold">★ {course.rating}</span>
+                  <span className="text-slate-400 text-[11px]">
+                    ({course.reviewsCount?.toLocaleString()} reviews)
                   </span>
-                ))}
-                {(course.techStack || []).length > 4 && (
-                  <span className="text-[9px] font-mono text-slate-400">
-                    +{(course.techStack || []).length - 4} more
-                  </span>
+                </div>
+
+                {course.discountedPrice && (
+                  <div className="text-right">
+                    <span className="font-bold text-slate-900 text-sm">
+                      ₹{course.discountedPrice.toLocaleString()}
+                    </span>
+                    {course.emiStartsAt && (
+                      <span className="block text-[9px] text-slate-500">
+                        EMI from ₹{course.emiStartsAt.toLocaleString()}/mo
+                      </span>
+                    )}
+                  </div>
                 )}
               </div>
 
-              <div className="course-footer">
-                <span className="rating">
-                  ★ <b>{course.rating}</b>{" "}
-                  <small>({course.reviewsCount?.toLocaleString()} reviews)</small>
-                </span>
+              {/* Card Action Buttons */}
+              <div className="grid grid-cols-2 gap-2 pt-1">
                 <Link
                   href={`/courses/${course.slug}`}
-                  className="font-bold text-blue-600 hover:text-blue-800 transition flex items-center gap-1"
+                  className="w-full text-center py-2 rounded-lg border border-slate-200 text-xs font-bold text-slate-700 hover:border-slate-300 hover:bg-slate-50 transition"
                 >
-                  <span>View program</span>
-                  <span>→</span>
+                  View Curriculum
+                </Link>
+                <Link
+                  href={`/admissions?course=${encodeURIComponent(course.title)}`}
+                  className="w-full text-center py-2 rounded-lg bg-blue-600 text-xs font-bold text-white hover:bg-blue-700 transition shadow-xs"
+                >
+                  Enroll Now
                 </Link>
               </div>
             </div>
@@ -272,20 +375,26 @@ export default function CourseCatalog() {
 
       {/* Empty State */}
       {filtered.length === 0 && (
-        <div className="empty-state">
-          <span>⌕</span>
-          <h3>No matching learning programs found</h3>
-          <p>Try loosening your search filters or explore all categories.</p>
+        <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-12 text-center space-y-3">
+          <div className="h-12 w-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mx-auto text-xl font-bold">
+            ⌕
+          </div>
+          <h3 className="font-heading text-lg font-bold text-slate-900">
+            No matching learning programs found
+          </h3>
+          <p className="text-xs text-slate-500 max-w-sm mx-auto">
+            Try adjusting your search query, selecting a different experience level, or resetting all filters.
+          </p>
           <button
             type="button"
-            className="text-link"
             onClick={() => {
               setQuery("");
-              setCategory("All programs");
+              setCategory("All Programs");
               setSelectedLevel("All Levels");
             }}
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-blue-600 text-xs font-bold text-white hover:bg-blue-700 transition shadow-xs"
           >
-            Clear all filters ↗
+            Clear All Filters
           </button>
         </div>
       )}

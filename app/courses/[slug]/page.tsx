@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import React, { useState, useEffect, use } from "react";
 import { learningApi } from "@/lib/api";
 import {
@@ -236,12 +237,24 @@ export default function CourseDetailPage({ params }: PageProps) {
             </small>
           </div>
 
-          {/* Visual Artwork Card */}
-          <div className="detail-art">
-            <span className="art-label">GO TECH EDU ACADEMY</span>
-            <strong>{course.symbol}</strong>
-            <p>{course.coverText}</p>
-            <div className="detail-floating">
+          {/* Visual Artwork Card with Realistic Photographic Image */}
+          <div className="detail-art relative overflow-hidden rounded-2xl shadow-xl">
+            {course.previewImage && (
+              <Image
+                src={course.previewImage}
+                alt={course.title}
+                fill
+                className="object-cover"
+                priority
+              />
+            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-900/40 to-slate-950/30" />
+            <span className="art-label relative z-10">GO TECH EDU ACADEMY</span>
+            <div className="relative z-10 text-center px-4">
+              <strong className="text-4xl sm:text-5xl font-mono text-white/90 drop-shadow-md">{course.symbol}</strong>
+              <p className="text-sm font-semibold text-white/95 mt-2">{course.coverText}</p>
+            </div>
+            <div className="detail-floating z-10">
               ✦ <span>Avg {course.averageSalaryHike} Salary Hike</span>
             </div>
           </div>
